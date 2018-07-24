@@ -1,4 +1,5 @@
 from flask import Flask
+from absents.version import __version__
 from absents.views.home import bp_home
 
 
