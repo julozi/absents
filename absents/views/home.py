@@ -1,8 +1,8 @@
-from flask import Blueprint, render_template
+from flask import Blueprint, redirect, url_for
 
 bp_home = Blueprint('home', __name__)
 
 
 @bp_home.route('/')
 def index():
-    return 'Hello World!'
+    return redirect(url_for('classes.list'))
