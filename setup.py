@@ -7,6 +7,7 @@ setup(
     packages=['absents'],
     include_package_data=True,
     install_requires=[
-        'flask',
+        'flask==1.0.2',
+        'flask-sqlalchemy==1.2.10'
     ],
 )

@@ -1,0 +1,7 @@
+table .weekend {
+  background-color: rgb(100, 100, 100) !important;
+}
+
+table .vacation {
+  background-color: rgb(150, 150, 150);
+}

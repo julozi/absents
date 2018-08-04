@@ -31,4 +31,4 @@ env
 cover_html/
 
 # Platform specific files
-app.cfg
+app.json

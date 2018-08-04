@@ -1,0 +1,148 @@
+{% extends "layout.html" %}
+
+{% block body %}
+<div class="row">
+  <div class="col-sm-3">
+  {% if previous_month != None %}
+    <a class="btn btn-light" href="{{ url_for('absences.list', class_id=schoolclass.id, year=previous_month.year, month=previous_month.month) }}">
+      <i class="fas fa-angle-left"></i> {{ previous_month.strftime('%B %Y')|capitalize }}
+    </a>
+  {% endif %}
+  </div>
+  <div class="col-sm-6 text-center">
+    Classe de {{ schoolclass.name }}<br/>
+    <strong>{{ last_day.strftime('%B %Y')|capitalize }}</strong>
+  </div>
+  <div class="col-sm-3 text-right">
+  {% if next_month != None %}
+    <a class="btn btn-light" href="{{ url_for('absences.list', class_id=schoolclass.id, year=next_month.year, month=next_month.month) }}">
+      {{ next_month.strftime('%B %Y')|capitalize }} <i class="fas fa-angle-right"></i>
+    </a>
+  {% endif %}
+  </div>
+</div>
+
+<table class="table table-hover table-bordered table-sm">
+  <thead>
+    <tr>
+      <th>Elèves</th>
+      {% for day in range(1, last_day.day+1) %}
+      <th class="{{'vacation' if day in vacation_days}} {{'weekend' if day in weekend_days}} text-center">{{day}}</th>
+      {% endfor %}
+    </tr>
+  </thead>
+  <tbody>
+  {% for grade in students.keys() %}
+  <tr class="table-secondary"><th colspan="{{ last_day.day + 1 }}">{{ grade.name }}</th></tr>
+  {% for student in students[grade] %}
+  <tr>
+    <th>{{ student.lastname }} {{ student.firstname }}</th>
+    {% for day in range(1, last_day.day+1) %}
+    {% set absence = absences[student][day] %}
+    <td class="{{'vacation' if day in vacation_days}} {{'weekend' if day in weekend_days}} text-center">
+      {% if day not in vacation_days and day not in weekend_days %}
+        <button id="btn{{student.id}}_{{day}}" data-day="{{ day }}" data-student-id="{{ student.id }}" data-value="{{ absence.period if absence != None }}" data-student="{{ student.firstname }}" data-reason="{{ absence.reason|default('', true) }}" class="btn btn-absence {% if absence != None %}{% if absence.reason == None%}btn-warning{% else %}btn-info{% endif %}{% else %}btn-light{% endif %}">
+        {% if absence != None %}
+          {{ absence.symbol|safe }}
+        {% else %}
+          &nbsp;
+        {% endif %}
+        </button>
+      {% endif %}
+    </td>
+    {% endfor %}
+  </tr>
+  {% endfor %}
+  {% endfor %}
+  </tbody>
+</table>
+
+<p class="text-center">
+&#8212; : Absence le matin&nbsp;&nbsp;&nbsp;&nbsp;| : Absence l'après-midi&nbsp;&nbsp;&nbsp;&nbsp;+ : Absence toute la journée
+</p>
+
+<table class="table table-sm text-center">
+  <thead>
+    <tr>
+      <th>Nombre d'élèves inscrits pour le mois</th>
+      <th>Nombre de présences possible dans le mois</th>
+      <th>Nombre d'absences</th>
+      <th>Pourcentage des présences</th>
+      <th>Pourcentage des absences</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>{{ nb_students }}</td>
+      <td>{{ nb_possible_presences }}</td>
+      <td>{{ nb_absences }}</td>
+      <td>{{ prc_presences|round(2) }}%</td>
+      <td>{{ prc_absences|round(2) }}%</td>
+    </tr>
+  </tbody>
+</table>
+
+{% endblock %}
+
+{% block endbody %}
+<script type="text/javascript">
+const Form = ({student, day, reason}) => `
+<form id="absenceform" action="/classes/{{ schoolclass.id }}/absences" method="post">
+  <input type="hidden" name="student" value="${student}" />
+  <input type="hidden" name="day" value="${day}" />
+  <input type="hidden" name="month" value="{{ last_day.month }}" />
+  <input type="hidden" name="year" value="{{ last_day.year }}" />
+  <div class="form-check">
+    <input class="form-check-input" type="radio" name="period" id="period-none" value="">
+    <label class="form-check-label" for="period-none">
+      Aucune
+    </label>
+  </div>
+  <div class="form-check">
+    <input class="form-check-input" type="radio" name="period" id="period-morning" value="morning">
+    <label class="form-check-label" for="period-morning">
+      Matin
+    </label>
+  </div>
+  <div class="form-check">
+    <input class="form-check-input" type="radio" name="period" id="period-afternoon" value="afternoon">
+    <label class="form-check-label" for="period-afternoon">
+      Après-midi
+    </label>
+  </div>
+  <div class="form-check">
+    <input class="form-check-input" type="radio" name="period" id="period-all_day" value="all_day">
+    <label class="form-check-label" for="period-all_day">
+      Journée
+    </label>
+  </div>
+  <div class="form-group">
+    <label for="reason">Motif de l'absence</label>
+    <textarea class="form-control" id="reason" name="reason" rows="2">${reason}</textarea>
+  </div>
+  <a class="cancel btn btn-outline-secondary">Annuler</a>
+  <button type="submit" class="btn btn-outline-primary">Enregistrer</button>
+</form>
+`;
+
+$('button.btn-absence').click(function () {
+  $('button.btn-absence').popover('dispose');
+  var value = $(this).attr('data-value');
+  var po_settings = {
+    html: true,
+    content: Form({
+      student: $(this).attr('data-student-id'),
+      day: $(this).attr('data-day'),
+      reason: $(this).attr('data-reason')
+    }),
+    title: "Absence de " + $(this).attr('data-student'),
+  };
+  $(this).popover(po_settings);
+  $(this).popover('show');
+  $(`#absenceform input[value="${value}"]`).prop("checked", true);
+  $('#absenceform a.cancel').click({that: $(this)}, function (event) {
+    event.data.that.popover('dispose');
+  });
+});
+</script>
+{% endblock %}

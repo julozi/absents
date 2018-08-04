@@ -11,12 +11,14 @@
     </tr>
   </thead>
   <tbody>
+    {% for schoolclass in classes %}
     <tr>
-      <th scope="row">G. Seiler / V. Dupont</th>
-      <td>CE1</td>
+      <th scope="row">{{ schoolclass.name }}</th>
+      <td>{{ schoolclass.grade }}</td>
       <td></td>
-      <td><a class="btn btn-light btn-sm" href="#" role="button">Saisir les absences</a></td>
+      <td><a class="btn btn-light btn-sm" href="{{ url_for('absences.list', class_id=schoolclass.id) }}" role="button">Saisir les absences</a></td>
     </tr>
+    {% endfor %}
   </tbody>
 </table>
 {% endblock %}
