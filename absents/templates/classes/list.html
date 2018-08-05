@@ -1,6 +1,22 @@
 {% extends "layout.html" %}
 
 {% block body %}
+<div class="row align-items-center">
+  <div class="col-3">
+    <a class="btn btn-light" href="{{ url_for('classes.list', year=year - 1) }}">
+      <i class="fas fa-angle-left"></i> {{ year - 1 }}/{{ year }}
+    </a>
+  </div>
+  <div class="col-6 text-center">
+    <strong>Année scolaire {{ year }}/{{ year + 1 }}</strong>
+  </div>
+  <div class="col-sm-3 text-right">
+    <a class="btn btn-light" href="{{ url_for('classes.list', year=year + 1) }}">
+      {{ year + 1 }}/{{ year + 2 }} <i class="fas fa-angle-right"></i>
+    </a>
+  </div>
+</div>
+
 <table class="table table-striped">
   <thead>
     <tr>
@@ -16,7 +32,10 @@
       <th scope="row">{{ schoolclass.name }}</th>
       <td>{{ schoolclass.grade }}</td>
       <td></td>
-      <td><a class="btn btn-light btn-sm" href="{{ url_for('absences.list', class_id=schoolclass.id) }}" role="button">Saisir les absences</a></td>
+      <td>
+        <a class="btn btn-light btn-sm" href="{{ url_for('absences.list', class_id=schoolclass.id) }}" role="button">Saisir les absences</a>
+        <a class="btn btn-light btn-sm" href="{{ url_for('students.list', class_id=schoolclass.id) }}" role="button">Gérer les élèves</a>
+      </td>
     </tr>
     {% endfor %}
   </tbody>
