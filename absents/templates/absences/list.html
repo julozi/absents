@@ -32,9 +32,9 @@
     </tr>
   </thead>
   <tbody>
-  {% for grade in students.keys() %}
-  <tr class="table-secondary"><th colspan="{{ last_day.day + 1 }}">{{ grade.name }}</th></tr>
-  {% for student in students[grade] %}
+  {% for group in students|groupby('grade.name') %}
+  <tr class="table-secondary"><th colspan="{{ last_day.day + 1 }}">{{ group.grouper }}</th></tr>
+  {% for student in group.list %}
   <tr>
     <th>{{ student.lastname }} {{ student.firstname }}</th>
     {% for day in range(1, last_day.day+1) %}

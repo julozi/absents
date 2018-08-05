@@ -1,7 +1,9 @@
+import click
+
 from datetime import date
 
 from absents import app, db
-from absents.domain import Absence, Grade, SchoolClass, SchoolClassMembership, Student, Teacher, Vacation
+from absents.domain import Absence, Grade, SchoolClass, Student, Teacher, Vacation
 
 
 @app.cli.command()
@@ -36,21 +38,33 @@ def create_vacations_2018():
 
 
 @app.cli.command()
-def create_test_data():
-    test = SchoolClass(year=2018)
+@click.pass_context
+def create_test_db(ctx):
+    ctx.forward(clear_db)
+    ctx.invoke(clear_db)
+    ctx.forward(create_db)
+    ctx.invoke(create_db)
+    ctx.forward(create_grades)
+    ctx.invoke(create_grades)
+    ctx.forward(create_vacations_2018)
+    ctx.invoke(create_vacations_2018)
+
+    the_class = SchoolClass(year=2018)
     ce1 = Grade.query.filter_by(name='CE1').first()
     ce2 = Grade.query.filter_by(name='CE2').first()
-    test.grades.append(ce1)
-    test.grades.append(ce2)
-    test.teachers.append(Teacher(firstname="Géraldine", lastname="Seiler", email="geyraldine@gmail.com"))
-    test.teachers.append(Teacher(firstname="Fanny", lastname="Thenaut", email="fanny@gmail.com"))
-    john = Student(firstname="John", lastname="Doe")
+    the_class.grades.append(ce1)
+    the_class.grades.append(ce2)
 
-    test.memberships.append(SchoolClassMembership(student=john, grade=ce1, start_date=date(2018, 9, 3), end_date=date(2018, 12, 24)))
-    test.memberships.append(SchoolClassMembership(student=Student(firstname="Jane", lastname="Doe"), grade=ce2, start_date=date(2018, 10, 1), end_date=date(2019, 7, 12)))
-    test.memberships.append(SchoolClassMembership(student=Student(firstname="Eli", lastname="Copter"), grade=ce1, start_date=date(2018, 9, 3), end_date=date(2019, 7, 12)))
-    test.memberships.append(SchoolClassMembership(student=Student(firstname="Clair", lastname="Delune"), grade=ce2, start_date=date(2018, 9, 3), end_date=date(2019, 7, 12)))
-    test.memberships.append(SchoolClassMembership(student=Student(firstname="Jean", lastname="Bon"), grade=ce1, start_date=date(2018, 9, 3), end_date=date(2019, 7, 12)))
-    db.session.add(test)
-    db.session.add(Absence(date=date(2018, 9, 4), period='all_day', student=john, schoolclass=test))
+    the_class.teachers.append(Teacher(firstname="Géraldine", lastname="Seiler", email="geyraldine@gmail.com"))
+    the_class.teachers.append(Teacher(firstname="Fanny", lastname="Thenaut", email="fanny@gmail.com"))
+
+    john = Student(firstname="John", lastname="Doe", schoolclass=the_class, grade=ce1, start_date=date(2018, 9, 3), end_date=date(2018, 12, 24))
+    Student(firstname="Jane", lastname="Doe", schoolclass=the_class, grade=ce2, start_date=date(2018, 10, 1), end_date=date(2019, 7, 12))
+    Student(firstname="Eli", lastname="Copter", schoolclass=the_class, grade=ce1, start_date=date(2018, 9, 3), end_date=date(2019, 7, 12))
+    Student(firstname="Clair", lastname="Delune", schoolclass=the_class, grade=ce2, start_date=date(2018, 9, 3), end_date=date(2019, 7, 12))
+    Student(firstname="Jean", lastname="Bon", schoolclass=the_class, grade=ce1, start_date=date(2018, 9, 3), end_date=date(2019, 7, 12))
+
+    db.session.add(the_class)
+
+    db.session.add(Absence(date=date(2018, 9, 4), period='all_day', student=john))
     db.session.commit()

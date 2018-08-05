@@ -1,5 +1,4 @@
 from absents import db
-from sqlalchemy.ext.associationproxy import association_proxy
 
 
 schoolclass_grade = db.Table('schoolclass_grade',
@@ -29,9 +28,6 @@ class SchoolClass(db.Model):
         return " / ".join([grade.name for grade in self.grades])
 
 
-SchoolClass.members = association_proxy("memberships", "student")
-
-
 class Grade(db.Model):
     __tablename__ = 'grade'
 
@@ -57,20 +53,12 @@ class Student(db.Model):
     firstname = db.Column(db.Text, nullable=False)
     lastname = db.Column(db.Text, nullable=False)
 
-
-class SchoolClassMembership(db.Model):
-    __tablename__ = 'memberships'
-
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-
     schoolclass_id = db.Column(db.Integer, db.ForeignKey('schoolclass.id'))
-    student_id = db.Column(db.Integer, db.ForeignKey('student.id'))
     grade_id = db.Column(db.Integer, db.ForeignKey('grade.id'))
     start_date = db.Column(db.Date, nullable=False)
     end_date = db.Column(db.Date, nullable=False)
 
-    schoolclass = db.relationship(SchoolClass, backref="memberships")
-    student = db.relationship(Student, backref="memberships")
+    schoolclass = db.relationship(SchoolClass, backref="students")
     grade = db.relationship(Grade)
 
 
@@ -94,10 +82,8 @@ class Absence(db.Model):
     period = db.Column(db.Enum('morning', 'afternoon', 'all_day', name='absence_period'), nullable=False)
     reason = db.Column(db.Text, nullable=True)
 
-    schoolclass_id = db.Column(db.Integer, db.ForeignKey('schoolclass.id'))
     student_id = db.Column(db.Integer, db.ForeignKey('student.id'))
 
-    schoolclass = db.relationship(SchoolClass)
     student = db.relationship(Student)
 
     @property

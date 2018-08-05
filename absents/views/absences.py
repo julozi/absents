@@ -4,7 +4,7 @@ from flask import Blueprint, redirect, render_template, request, url_for
 from sqlalchemy import and_, or_
 
 from absents import db
-from absents.domain import Absence, Grade, SchoolClass, SchoolClassMembership, Student, Vacation
+from absents.domain import Absence, Grade, SchoolClass, Student, Vacation
 
 bp_absences = Blueprint('absences', __name__)
 
@@ -68,40 +68,33 @@ def list(class_id):
     next_month = date(year, month, 1) + timedelta(days=last_day.day) if first_day < date(schoolclass.year + 1, 7, 1) else None
 
     # retrieve students
-    memberships = SchoolClassMembership.query\
-                                       .filter_by(schoolclass=schoolclass)\
-                                       .filter(or_(and_(SchoolClassMembership.end_date >= first_day,
-                                                        SchoolClassMembership.end_date <= last_day),
-                                                   and_(SchoolClassMembership.start_date >= first_day,
-                                                        SchoolClassMembership.start_date <= last_day),
-                                                   and_(SchoolClassMembership.start_date < first_day,
-                                                        SchoolClassMembership.end_date > last_day)))\
-                                       .join(Student, SchoolClassMembership.student)\
-                                       .join(Grade, SchoolClassMembership.grade)\
-                                       .order_by(Grade.cycle, Grade.level, Student.lastname, Student.firstname)\
-                                       .all()
-    students = {}
-    for membership in memberships:
-        if membership.grade not in students.keys():
-            students[membership.grade] = []
-        students[membership.grade].append(membership.student)
+    students = Student.query.filter_by(schoolclass=schoolclass)\
+                            .filter(or_(and_(Student.end_date >= first_day,
+                                             Student.end_date <= last_day),
+                                        and_(Student.start_date >= first_day,
+                                             Student.start_date <= last_day),
+                                        and_(Student.start_date < first_day,
+                                             Student.end_date > last_day)))\
+                            .join(Grade, Student.grade)\
+                            .order_by(Grade.cycle, Grade.level, Student.lastname, Student.firstname)\
+                            .all()
 
     # retrieve absences
     absence_objs = Absence.query\
-                          .filter_by(schoolclass=schoolclass)\
+                          .join(Student, Absence.student)\
+                          .filter(Student.schoolclass == schoolclass)\
                           .filter(Absence.date >= first_day)\
                           .filter(Absence.date <= last_day)\
                           .all()
     absences = {}
-    for grade, students_list in students.items():
-        for student in students_list:
-            absences[student] = {}
-            for day in range(1, last_day.day + 1):
-                absences[student][day] = None
+    for student in students:
+        absences[student] = {}
+        for day in range(1, last_day.day + 1):
+            absences[student][day] = None
     for absence in absence_objs:
         absences[absence.student][absence.date.day] = absence
 
-    nb_students = len(memberships)
+    nb_students = len(students)
     nb_possible_presences = (last_day.day - len(weekend_days) - len(vacation_days)) * 2 * nb_students
     nb_absences = sum([absence.score for absence in absence_objs])
     prc_absences = nb_absences * 100.0 / nb_possible_presences
@@ -128,8 +121,7 @@ def list(class_id):
 @bp_absences.route('/<int:class_id>/absences', methods=['POST'])
 def create_or_update(class_id):
     d = date(int(request.form['year']), int(request.form['month']), int(request.form['day']))
-    absence = Absence.query.filter_by(schoolclass_id=class_id)\
-                           .filter_by(student_id=int(request.form['student']))\
+    absence = Absence.query.filter_by(student_id=int(request.form['student']))\
                            .filter_by(date=d)\
                            .first()
 
@@ -140,7 +132,7 @@ def create_or_update(class_id):
             db.session.delete(absence)
     else:
         if absence is None:
-            absence = Absence(schoolclass_id=class_id, student_id=int(request.form['student']), date=d)
+            absence = Absence(student_id=int(request.form['student']), date=d)
             db.session.add(absence)
         absence.period = period
         absence.reason = request.form['reason'] if len(request.form['reason']) > 0 else None
