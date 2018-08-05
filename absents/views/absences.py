@@ -29,10 +29,7 @@ def list(class_id):
 
     # august is forbidden
     if month == 8:
-        if today.year <= schoolclass.year:
-            month = 9
-        else:
-            month = 7
+        month = 9 if today.year <= schoolclass.year else 7
 
     # adujst year depending on the month
     if month <= 7 and year != schoolclass.year + 1:
