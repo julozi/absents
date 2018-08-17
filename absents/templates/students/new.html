@@ -1,0 +1,51 @@
+{% extends "layout.html" %}
+
+{% block body %}
+<div class="row justify-content-around">
+  <div class="col-6">
+    <h2>Ajout d'un élève à la classe de {{ schoolclass.name }} ({{ schoolclass.year }}/{{ schoolclass.year + 1 }})</h2>
+
+    <form action="{{ url_for('students.add', class_id=schoolclass.id) }}" method="post">
+      <fieldset class="form-group">
+        <label for="firstname">Prénom</label>
+        <input type="text" class="form-control" id="firstname" name="firstname" placeholder="" value="{{ student.firstname }}">
+      </fieldset>
+      <fieldset class="form-group">
+        <label for="lastname">Nom</label>
+        <input type="text" class="form-control" id="lastname" name="lastname" placeholder="" value="{{ student.lastname }}">
+      </fieldset>
+      <fieldset class="form-group">
+        <label for="grade">Niveau</label>
+        <select class="form-control" id="grade" name="grade">
+        {% for grade in schoolclass.grades %}
+          <option value="{{ grade.id }}" {% if student.grade == grade.id %}selected="selected"{% endif %}>{{ grade.name }}</option>
+        {% endfor %}
+        </select>
+      </fieldset>
+      <fieldset class="form-group">
+        <label for="start_date">Date d'arrivée dans la classe</label>
+        <input type="text" class="datepicker form-control" id="start_date" name="start_date" value={{ student.start_date if 'start_date' in student else schoolclass.schoolyear.start_date.strftime('%d/%m/%Y') }}>
+      </fieldset>
+      <fieldset class="form-group">
+        <label for="end_date">Date de départ de la classe</label>
+        <input type="text" class="datepicker form-control" id="end_date" name="end_date" value={{ student.end_date if 'end_date' in student else schoolclass.schoolyear.end_date.strftime('%d/%m/%Y') }}>
+      </fieldset>
+      <div class="text-right">
+        <a href="{{ url_for('students.list', class_id=schoolclass.id) }}" class="btn btn-outline-secondary">Annuler</a>
+        <button type="submit" class="btn btn-outline-primary">Ajouter</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block endbody %}
+<script type="text/javascript">
+  var settings = {
+    uiLibrary: 'bootstrap4',
+    format: 'dd/mm/yyyy'
+  }
+  $('#start_date').datepicker(settings);
+  $('#end_date').datepicker(settings);
+</script>
+{% endblock %}

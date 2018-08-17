@@ -1,0 +1,36 @@
+{% extends "layout.html" %}
+
+{% block body %}
+<div class="row">
+  <div class="col-sm-8">
+      <h2>Elèves de la classe de {{ schoolclass.name }} ({{ schoolclass.year }}/{{ schoolclass.year + 1 }})</h2>
+  </div>
+  <div class="col-sm-4 text-right">
+      <a href="{{ url_for('students.new', class_id=schoolclass.id) }}" class="btn btn-outline-primary">Ajouter un élève</a>
+  </div>
+</div>
+
+
+<table class="table table-hover table-bordered table-sm">
+  <thead>
+    <tr>
+      <th>Nom</th>
+      <th>Prénom</th>
+      <th>Niveau</th>
+      <th>Date d'entrée</th>
+      <th>Date de sortie</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for student in students %}
+  <tr>
+    <td>{{ student.lastname }}</td>
+    <td>{{ student.firstname }}</td>
+    <td>{{ student.grade.name }}</td>
+    <td>{{ student.start_date }}</td>
+    <td>{{ student.end_date }}</td>
+  </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

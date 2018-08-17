@@ -21,9 +21,11 @@ import absents.cli  # noqa
 from absents.views.absences import bp_absences  # noqa
 from absents.views.classes import bp_classes  # noqa
 from absents.views.home import bp_home  # noqa
+from absents.views.students import bp_students  # noqa
 app.register_blueprint(bp_home)
-app.register_blueprint(bp_classes, url_prefix='/classes')
 app.register_blueprint(bp_absences, url_prefix='/classes')
+app.register_blueprint(bp_classes, url_prefix='/classes')
+app.register_blueprint(bp_students, url_prefix='/classes')
 
 
 # Add variable to Jinja context

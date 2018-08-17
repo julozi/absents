@@ -10,14 +10,23 @@ schoolclass_teacher = db.Table('schoolclass_teacher',
                                db.Column('teacher_id', db.Integer, db.ForeignKey('teacher.id'), primary_key=True))
 
 
+class SchoolYear(db.Model):
+    __tablename__ = 'schoolyear'
+
+    id = db.Column(db.Integer, primary_key=True)
+    start_date = db.Column(db.Date, nullable=False)
+    end_date = db.Column(db.Date, nullable=False)
+
+
 class SchoolClass(db.Model):
     __tablename__ = 'schoolclass'
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    year = db.Column(db.Integer, nullable=False)
+    year = db.Column(db.Integer, db.ForeignKey('schoolyear.id'), nullable=False)
 
     grades = db.relationship('Grade', secondary=schoolclass_grade, lazy='subquery', backref=db.backref('grades', lazy=True))
     teachers = db.relationship('Teacher', secondary=schoolclass_teacher, lazy='subquery', backref=db.backref('teacehrs', lazy=True))
+    schoolyear = db.relationship(SchoolYear)
 
     @property
     def name(self):
