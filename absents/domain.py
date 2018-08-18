@@ -61,14 +61,31 @@ class Student(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     firstname = db.Column(db.Text, nullable=False)
     lastname = db.Column(db.Text, nullable=False)
+    sex = db.Column(db.Enum('m', 'f', name='student_sex'), nullable=False)
+    birth_date = db.Column(db.Date, nullable=True)
 
-    schoolclass_id = db.Column(db.Integer, db.ForeignKey('schoolclass.id'))
+    schoolclass_id = db.Column(db.Integer, db.ForeignKey('schoolclass.id', ondelete='CASCADE'))
     grade_id = db.Column(db.Integer, db.ForeignKey('grade.id'))
     start_date = db.Column(db.Date, nullable=False)
     end_date = db.Column(db.Date, nullable=False)
 
     schoolclass = db.relationship(SchoolClass, backref="students")
     grade = db.relationship(Grade)
+
+    def __repr__(self):
+        return "%s %s" % (self.firstname, self.lastname)
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'firstname': self.firstname,
+            'lastname': self.lastname,
+            'birth_date': self.birth_date,
+            'sex': self.sex,
+            'grade': self.grade_id,
+            'start_date': self.start_date,
+            'end_date': self.end_date
+        }
 
 
 class Absence(db.Model):
@@ -91,7 +108,7 @@ class Absence(db.Model):
     period = db.Column(db.Enum('morning', 'afternoon', 'all_day', name='absence_period'), nullable=False)
     reason = db.Column(db.Text, nullable=True)
 
-    student_id = db.Column(db.Integer, db.ForeignKey('student.id'))
+    student_id = db.Column(db.Integer, db.ForeignKey('student.id', ondelete='CASCADE'))
 
     student = db.relationship(Student)
 

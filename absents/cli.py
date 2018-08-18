@@ -58,11 +58,11 @@ def create_test_db(ctx):
     the_class.teachers.append(Teacher(firstname="Géraldine", lastname="Seiler", email="geyraldine@gmail.com"))
     the_class.teachers.append(Teacher(firstname="Fanny", lastname="Thenaut", email="fanny@gmail.com"))
 
-    john = Student(firstname="John", lastname="Doe", schoolclass=the_class, grade=ce1, start_date=schoolyear.start_date, end_date=date(2018, 12, 24))
-    Student(firstname="Jane", lastname="Doe", schoolclass=the_class, grade=ce2, start_date=date(2018, 10, 1), end_date=schoolyear.end_date)
-    Student(firstname="Eli", lastname="Copter", schoolclass=the_class, grade=ce1, start_date=schoolyear.start_date, end_date=schoolyear.end_date)
-    Student(firstname="Clair", lastname="Delune", schoolclass=the_class, grade=ce2, start_date=schoolyear.start_date, end_date=schoolyear.end_date)
-    Student(firstname="Jean", lastname="Bon", schoolclass=the_class, grade=ce1, start_date=schoolyear.start_date, end_date=schoolyear.end_date)
+    john = Student(firstname="John", lastname="Doe", sex='m', birth_date=date(2010, 1, 1), schoolclass=the_class, grade=ce1, start_date=schoolyear.start_date, end_date=date(2018, 12, 24))
+    Student(firstname="Jane", lastname="Doe", sex='f', birth_date=date(2010, 1, 1), schoolclass=the_class, grade=ce2, start_date=date(2018, 10, 1), end_date=schoolyear.end_date)
+    Student(firstname="Eli", lastname="Copter", sex='m', birth_date=date(2010, 1, 1), schoolclass=the_class, grade=ce1, start_date=schoolyear.start_date, end_date=schoolyear.end_date)
+    Student(firstname="Claire", lastname="Delune", sex='f', birth_date=date(2010, 1, 1), schoolclass=the_class, grade=ce2, start_date=schoolyear.start_date, end_date=schoolyear.end_date)
+    Student(firstname="Jean", lastname="Bon", sex='m', birth_date=date(2010, 1, 1), schoolclass=the_class, grade=ce1, start_date=schoolyear.start_date, end_date=schoolyear.end_date)
 
     db.session.add(the_class)
 

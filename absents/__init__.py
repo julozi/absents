@@ -3,6 +3,8 @@ import os
 
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
+from werkzeug import url_decode
+
 from absents.version import __version__
 
 
@@ -11,7 +13,26 @@ try:
 except locale.Error:  # pragma: no cover
     locale.setlocale(locale.LC_TIME, "fr_FR.utf8")
 
+
+# Compliante with https://fr.slideshare.net/landlessness/teach-a-dog-to-rest
+# See http://flask.pocoo.org/snippets/38/
+class MethodRewriteMiddleware(object):
+
+    def __init__(self, app):
+        self.app = app
+
+    def __call__(self, environ, start_response):
+        if 'method' in environ.get('QUERY_STRING', ''):
+            args = url_decode(environ['QUERY_STRING'])
+            method = args.get('method')
+            if method:
+                method = method.encode('ascii', 'replace')
+                environ['REQUEST_METHOD'] = method
+        return self.app(environ, start_response)
+
+
 app = Flask(__name__)
+app.wsgi_app = MethodRewriteMiddleware(app.wsgi_app)
 app.config.from_object('absents.default_settings.DefaultSettings')
 app.config.from_json(os.path.join(os.getcwd(), 'app.json'), silent=False)
 db = SQLAlchemy(app)

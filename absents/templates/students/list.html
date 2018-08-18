@@ -16,9 +16,11 @@
     <tr>
       <th>Nom</th>
       <th>Prénom</th>
+      <th>Date de naissance</th>
       <th>Niveau</th>
       <th>Date d'entrée</th>
       <th>Date de sortie</th>
+      <th></th>
     </tr>
   </thead>
   <tbody>
@@ -26,11 +28,56 @@
   <tr>
     <td>{{ student.lastname }}</td>
     <td>{{ student.firstname }}</td>
+    <td>{{ student.birth_date.strftime('%d/%m/%Y') if student.birth_date }}</td>
+    <td>{{ student.sex|upper }}</td>
     <td>{{ student.grade.name }}</td>
-    <td>{{ student.start_date }}</td>
-    <td>{{ student.end_date }}</td>
+    <td>{{ student.start_date.strftime('%d/%m/%Y') }}</td>
+    <td>{{ student.end_date.strftime('%d/%m/%Y') }}</td>
+    <td>
+      <a class="btn btn-sm btn-outline-primary" href="{{ url_for('students.edit', class_id=schoolclass.id, student_id=student.id) }}" role="button">Modifier</a>
+      <button type="button" class="btn btn-sm btn-outline-danger" data-toggle="modal" data-target="#deleteModal" data-student_id="{{ student.id }}" data-student_name="{{ student.firstname }} {{ student.lastname }}">
+        Supprimer
+      </button>
+    </td>
   </tr>
   {% endfor %}
   </tbody>
 </table>
+
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="deleteModalLabel">Supprimer un élève</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        Êtes-vous sûr de vouloir supprimer cet élève ?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Annuler</button>
+        <a class="btn btn-outline-danger" href="{{ url_for('students.delete', class_id=schoolclass.id, student_id=99999999999, method='delete') }}" role="button">Supprimer</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block endbody %}
+<script type="text/javascript">
+  $('#deleteModal').on('show.bs.modal', function (event) {
+  var button = $(event.relatedTarget) // Button that triggered the modal
+  var student_id = button.data('student_id') // Extract info from data-* attributes
+  var student_name = button.data('student_name')
+  // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
+  // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
+  var modal = $(this)
+  modal.find('.modal-title').text('Suppression de ' + student_name)
+  modal.find('.modal-body').text('Êtes-vous sûr de vouloir supprimer ' + student_name + ' ?')
+  var url = modal.find('a.btn').attr('href')
+  modal.find('a.btn').attr('href', url.replace('99999999999', student_id))
+  })
+</script>
 {% endblock %}
