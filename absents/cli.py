@@ -52,7 +52,7 @@ def create_test_db(ctx):
     ce2 = Grade.query.filter_by(name='CE2').first()
     schoolyear = SchoolYear.query.get(2018)
 
-    the_class = SchoolClass(schoolyear=schoolyear)
+    the_class = SchoolClass(schoolyear=schoolyear, room=109, bilingual=True)
     the_class.grades.append(ce1)
     the_class.grades.append(ce2)
     the_class.teachers.append(Teacher(firstname="Géraldine", lastname="Seiler", email="geyraldine@gmail.com"))
@@ -64,6 +64,10 @@ def create_test_db(ctx):
     Student(firstname="Claire", lastname="Delune", sex='f', birth_date=date(2010, 1, 1), schoolclass=the_class, grade=ce2, start_date=schoolyear.start_date, end_date=schoolyear.end_date)
     Student(firstname="Jean", lastname="Bon", sex='m', birth_date=date(2010, 1, 1), schoolclass=the_class, grade=ce1, start_date=schoolyear.start_date, end_date=schoolyear.end_date)
 
+    db.session.add(the_class)
+
+    the_class = SchoolClass(schoolyear=schoolyear, room=202, bilingual=False)
+    the_class.grades.append(ce1)
     db.session.add(the_class)
 
     db.session.add(Absence(date=date(2018, 9, 4), period='all_day', student=john))

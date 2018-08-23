@@ -23,6 +23,8 @@ class SchoolClass(db.Model):
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     year = db.Column(db.Integer, db.ForeignKey('schoolyear.id'), nullable=False)
+    room = db.Column(db.String, nullable=False)
+    bilingual = db.Column(db.Boolean, nullable=False, default=False)
 
     grades = db.relationship('Grade', secondary=schoolclass_grade, lazy='subquery', backref=db.backref('grades', lazy=True))
     teachers = db.relationship('Teacher', secondary=schoolclass_teacher, lazy='subquery', backref=db.backref('teacehrs', lazy=True))
@@ -30,7 +32,11 @@ class SchoolClass(db.Model):
 
     @property
     def name(self):
-        return " / ".join(["%s. %s" % (teacher.firstname[0], teacher.lastname) for teacher in self.teachers])
+        teachears = " / ".join(["%s. %s" % (teacher.firstname[0], teacher.lastname) for teacher in self.teachers])
+        name = "Salle %s" % self.room
+        if teachears:
+            name = "%s (%s)" % (name, teachears)
+        return name
 
     @property
     def grade(self):

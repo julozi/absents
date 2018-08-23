@@ -94,7 +94,7 @@ def list(class_id):
     nb_students = len(students)
     nb_possible_presences = (last_day.day - len(weekend_days) - len(vacation_days)) * 2 * nb_students
     nb_absences = sum([absence.score for absence in absence_objs])
-    prc_absences = nb_absences * 100.0 / nb_possible_presences
+    prc_absences = nb_absences * 100.0 / nb_possible_presences if nb_possible_presences != 0 else 0
     prc_presences = 100.0 - prc_absences
 
     return render_template('absences/list.html',

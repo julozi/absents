@@ -20,9 +20,8 @@
 <table class="table table-striped">
   <thead>
     <tr>
-      <th>Professeurs</th>
+      <th>Classe</th>
       <th>Niveau</th>
-      <th></th>
       <th></th>
     </tr>
   </thead>
@@ -30,11 +29,10 @@
     {% for schoolclass in classes %}
     <tr>
       <th scope="row">{{ schoolclass.name }}</th>
-      <td>{{ schoolclass.grade }}</td>
-      <td></td>
+      <td>{{ schoolclass.grade }}{% if schoolclass.bilingual %} (bilingue){% endif %}</td>
       <td>
-        <a class="btn btn-light btn-sm" href="{{ url_for('absences.list', class_id=schoolclass.id) }}" role="button">Saisir les absences</a>
-        <a class="btn btn-light btn-sm" href="{{ url_for('students.list', class_id=schoolclass.id) }}" role="button">Gérer les élèves</a>
+        <a class="btn btn-outline-primary btn-sm" href="{{ url_for('absences.list', class_id=schoolclass.id) }}" role="button">Saisir les absences</a>
+        <a class="btn btn-outline-secondary btn-sm" href="{{ url_for('students.list', class_id=schoolclass.id) }}" role="button">Gérer les élèves</a>
       </td>
     </tr>
     {% endfor %}

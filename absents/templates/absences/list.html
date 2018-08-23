@@ -53,6 +53,13 @@
     {% endfor %}
   </tr>
   {% endfor %}
+  {% else %}
+  <tr>
+    <td class="text-center" colspan="{{ last_day.day + 1 }}">
+      Aucun élève dans cette classe à cette période<br/>
+      <a class="btn btn-outline-primary btn-sm" href="{{ url_for('students.list', class_id=schoolclass.id) }}" role="button">Gérer les élèves</a>
+    </td>
+  </tr>
   {% endfor %}
   </tbody>
 </table>
