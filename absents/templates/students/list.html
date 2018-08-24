@@ -30,7 +30,7 @@
     <td>{{ student.lastname }}</td>
     <td>{{ student.firstname }}</td>
     <td>{{ student.birth_date.strftime('%d/%m/%Y') if student.birth_date }}</td>
-    <td>{{ student.sex|upper }}</td>
+    <td>{{ student.gender|upper }}</td>
     <td>{{ student.grade.name }}</td>
     <td>{{ student.start_date.strftime('%d/%m/%Y') }}</td>
     <td>{{ student.end_date.strftime('%d/%m/%Y') }}</td>

@@ -25,7 +25,7 @@ def get_student_schema(schoolclass):
         'firstname': Msg(Length(min=1), "Le prénom doit être renseigné."),
         'lastname': Msg(Length(min=1), "Le nom doit être renseigné."),
         Optional('birth_date'): Any('', Msg(Date('%d/%m/%Y'), "La date de naissance doit être renseignée.")),
-        'sex': Msg(Any('f', 'm'), "Vous devez sélectionner une valeur pour le sexe"),
+        'gender': Msg(Any('f', 'm'), "Vous devez sélectionner une valeur pour le sexe"),
         'grade': All(
             Coerce(int),
             Msg(In([grade.id for grade in schoolclass.grades]),
@@ -110,7 +110,7 @@ def add(class_id):
     student = Student(
         firstname=data['firstname'],
         lastname=data['lastname'],
-        sex=data['sex'],
+        gender=data['gender'],
         grade_id=data['grade'],
         start_date=data['start_date'],
         end_date=data['end_date'])
@@ -157,7 +157,7 @@ def update(class_id, student_id):
     student = Student.query.get(student_id)
     student.firstname = data['firstname']
     student.lastname = data['lastname']
-    student.sex = data['sex']
+    student.gender = data['gender']
     student.grade_id = data['grade']
     student.start_date = data['start_date']
     student.end_date = data['end_date']

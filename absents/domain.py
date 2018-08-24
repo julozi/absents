@@ -67,7 +67,7 @@ class Student(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     firstname = db.Column(db.Text, nullable=False)
     lastname = db.Column(db.Text, nullable=False)
-    sex = db.Column(db.Enum('m', 'f', name='student_sex'), nullable=False)
+    gender = db.Column(db.Enum('m', 'f', name='student_gender'), nullable=False)
     birth_date = db.Column(db.Date, nullable=True)
 
     schoolclass_id = db.Column(db.Integer, db.ForeignKey('schoolclass.id', ondelete='CASCADE'))
@@ -87,7 +87,7 @@ class Student(db.Model):
             'firstname': self.firstname,
             'lastname': self.lastname,
             'birth_date': self.birth_date,
-            'sex': self.sex,
+            'gender': self.gender,
             'grade': self.grade_id,
             'start_date': self.start_date,
             'end_date': self.end_date
