@@ -1,6 +1,7 @@
 import click
+import csv
 
-from datetime import date
+from datetime import date, datetime
 
 from absents import app, db
 from absents.domain import Absence, Grade, SchoolClass, SchoolYear, Student, Teacher, Vacation
@@ -38,6 +39,49 @@ def create_2018():
     db.session.add(Vacation(start_date=date(2019, 5, 29), end_date=date(2019, 6, 2)))
     db.session.add(Vacation(start_date=date(2019, 7, 6), end_date=date(2019, 9, 1)))
     db.session.commit()
+
+
+@app.cli.command()
+@click.option('--year', type=click.INT)
+@click.argument('f', type=click.Path(exists=True))
+def import_csv(year, f):
+    school_year = SchoolYear.query.get(year)
+
+    with open(f, 'r') as csvfile:
+        students = csv.reader(csvfile, delimiter=';')
+        for student_data in students:
+            room = student_data[0]
+            try:
+                int(room)
+            except ValueError:
+                print("Ignoring line : %s" % student_data)
+                continue
+            school_class = SchoolClass.query.filter_by(room=room).first()
+            if not school_class:
+                bilingual = student_data[2] == 'X'
+                school_class = SchoolClass(schoolyear=school_year, room=room, bilingual=bilingual)
+                db.session.add(school_class)
+
+            grade = Grade.query.filter_by(name=student_data[1]).first()
+            if grade is None:
+                print("Can't find grade for line : %s" % student_data)
+                continue
+
+            if grade not in school_class.grades:
+                school_class.grades.append(grade)
+
+            ulis = student_data[3] == 'X'
+            student = Student(firstname=student_data[5],
+                              lastname=student_data[4],
+                              birth_date=datetime.strptime(student_data[6], '%d/%m/%Y').date(),
+                              gender=student_data[7].lower(),
+                              start_date=school_year.start_date,
+                              end_date=school_year.end_date,
+                              ulis=ulis,
+                              schoolclass=school_class,
+                              grade=grade)
+            db.session.add(student)
+            db.session.commit()
 
 
 @app.cli.command()
