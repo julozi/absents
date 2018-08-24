@@ -74,6 +74,7 @@ class Student(db.Model):
     grade_id = db.Column(db.Integer, db.ForeignKey('grade.id'))
     start_date = db.Column(db.Date, nullable=False)
     end_date = db.Column(db.Date, nullable=False)
+    ulis = db.Column(db.Boolean, nullable=False, default=False)
 
     schoolclass = db.relationship(SchoolClass, backref="students")
     grade = db.relationship(Grade)
@@ -90,7 +91,8 @@ class Student(db.Model):
             'gender': self.gender,
             'grade': self.grade_id,
             'start_date': self.start_date,
-            'end_date': self.end_date
+            'end_date': self.end_date,
+            'ulis': self.ulis
         }
 
 

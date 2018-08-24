@@ -61,7 +61,7 @@ def create_test_db(ctx):
     john = Student(firstname="John", lastname="Doe", gender='m', birth_date=date(2010, 1, 1), schoolclass=the_class, grade=ce1, start_date=schoolyear.start_date, end_date=date(2018, 12, 24))
     Student(firstname="Jane", lastname="Doe", gender='f', birth_date=date(2010, 1, 1), schoolclass=the_class, grade=ce2, start_date=date(2018, 10, 1), end_date=schoolyear.end_date)
     Student(firstname="Eli", lastname="Copter", gender='m', birth_date=date(2010, 1, 1), schoolclass=the_class, grade=ce1, start_date=schoolyear.start_date, end_date=schoolyear.end_date)
-    Student(firstname="Claire", lastname="Delune", gender='f', birth_date=date(2010, 1, 1), schoolclass=the_class, grade=ce2, start_date=schoolyear.start_date, end_date=schoolyear.end_date)
+    Student(firstname="Claire", lastname="Delune", gender='f', birth_date=date(2010, 1, 1), schoolclass=the_class, grade=ce2, start_date=schoolyear.start_date, end_date=schoolyear.end_date, ulis=True)
     Student(firstname="Jean", lastname="Bon", gender='m', birth_date=date(2010, 1, 1), schoolclass=the_class, grade=ce1, start_date=schoolyear.start_date, end_date=schoolyear.end_date)
 
     db.session.add(the_class)

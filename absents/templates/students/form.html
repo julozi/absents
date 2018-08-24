@@ -41,6 +41,10 @@
   <label for="end_date">Date de départ de la classe</label>
   <input type="text" class="datepicker form-control" id="end_date" name="end_date" value={{ student.end_date if 'end_date' in student else schoolclass.schoolyear.end_date.strftime('%d/%m/%Y') }}>
 </fieldset>
+<div class="form-group form-check">
+    <input type="checkbox" class="form-check-input" id="ulis" name="ulis" {% if student.ulis %}checked="checked"{% endif %}>
+    <label class="form-check-label" for="ulis">ULIS</label>
+  </div>
 <div class="text-right">
   <a href="{{ url_for('students.list', class_id=schoolclass.id) }}" class="btn btn-outline-secondary">Annuler</a>
   <button type="submit" class="btn btn-outline-primary">{% if student.id|default(None, true) == None %}Ajouter{% else %}Modifier{% endif %}</button>

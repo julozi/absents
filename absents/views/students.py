@@ -1,6 +1,6 @@
 from datetime import date
 from flask import abort, Blueprint, flash, redirect, render_template, request, url_for
-from good import All, Any, Coerce, Date, Entire, In, Length, Msg, Optional, Range, Required, Schema
+from good import All, Any, Boolean, Coerce, Date, Default, Entire, In, Length, Msg, Optional, Range, Required, Schema
 from good.schema.errors import Invalid, MultipleInvalid
 
 from absents import db
@@ -38,6 +38,7 @@ def get_student_schema(schoolclass):
             Msg(Date('%d/%m/%Y'), "La date de départ de la classe doit être renseignée."),
             Msg(Range(schoolclass.schoolyear.start_date, schoolclass.schoolyear.end_date),
                 "La date de départ de la classe doit être comprise entre le %s et le %s" % (schoolclass.schoolyear.start_date.strftime("%d/%m/%Y"), schoolclass.schoolyear.end_date.strftime("%d/%m/%Y")))),
+        'ulis': Any(Msg(Boolean(), "Le champ ULIS doit être renseigné"), Default(False)),
         Entire: start_before_end()
         }, default_keys=Required)
 
@@ -113,7 +114,8 @@ def add(class_id):
         gender=data['gender'],
         grade_id=data['grade'],
         start_date=data['start_date'],
-        end_date=data['end_date'])
+        end_date=data['end_date'],
+        ulis=data['ulis'])
     if 'birth_date' in data and isinstance(data['birth_date'], date):
         student.birth_date = data['birth_date']
     schoolclass.students.append(student)
@@ -152,6 +154,7 @@ def update(class_id, student_id):
         student_schema(data)
     except Invalid as error:
         handle_validation_error(error)
+        data['id'] = student_id
         return render_student_form(schoolclass, data)
 
     student = Student.query.get(student_id)
@@ -161,6 +164,7 @@ def update(class_id, student_id):
     student.grade_id = data['grade']
     student.start_date = data['start_date']
     student.end_date = data['end_date']
+    student.ulis = data['ulis']
 
     if 'birth_date' in data and isinstance(data['birth_date'], date):
         student.birth_date = data['birth_date']
