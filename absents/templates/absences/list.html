@@ -2,6 +2,15 @@
 
 {% block body %}
 <div class="row">
+  <div class="col-sm-6">
+      <h3>{{ schoolclass.name }}</h3>
+  </div>
+  <div class="col-sm-6 text-right">
+    <a class="btn btn-outline-primary btn-sm" href="{{ url_for('students.list', class_id=schoolclass.id) }}" role="button">Gérer les élèves</a>
+  </div>
+</div>
+
+<div class="row">
   <div class="col-sm-3">
   {% if previous_month != None %}
     <a class="btn btn-light" href="{{ url_for('absences.list', class_id=schoolclass.id, year=previous_month.year, month=previous_month.month) }}">
@@ -10,7 +19,6 @@
   {% endif %}
   </div>
   <div class="col-sm-6 text-center">
-    Classe de {{ schoolclass.name }}<br/>
     <strong>{{ last_day.strftime('%B %Y')|capitalize }}</strong>
   </div>
   <div class="col-sm-3 text-right">
@@ -56,8 +64,7 @@
   {% else %}
   <tr>
     <td class="text-center" colspan="{{ last_day.day + 1 }}">
-      Aucun élève dans cette classe à cette période<br/>
-      <a class="btn btn-outline-primary btn-sm" href="{{ url_for('students.list', class_id=schoolclass.id) }}" role="button">Gérer les élèves</a>
+      Aucun élève dans cette classe à cette période
     </td>
   </tr>
   {% endfor %}
