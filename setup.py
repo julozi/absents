@@ -1,9 +1,9 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 setup(
     name='absents',
     version='0.1',
-    packages=['absents'],
+    packages=find_packages(),
     include_package_data=True,
     install_requires=[
         'flask==1.0.2',
