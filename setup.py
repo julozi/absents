@@ -1,9 +1,8 @@
 from setuptools import setup
-from absents.version import __version__
 
 setup(
     name='absents',
-    version=__version__,
+    version='0.1',
     packages=['absents'],
     include_package_data=True,
     install_requires=[
