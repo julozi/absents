@@ -3,7 +3,7 @@
 {% block body %}
 <div class="row">
   <div class="col-sm-8">
-      <h2>Elèves de la classe de {{ schoolclass.name }} ({{ schoolclass.year }}/{{ schoolclass.year + 1 }})</h2>
+      <h3>Elèves de la classe {{ schoolclass.name }} ({{ schoolclass.year }}/{{ schoolclass.year + 1 }})</h3>
   </div>
   <div class="col-sm-4 text-right">
       <a href="{{ url_for('students.new', class_id=schoolclass.id) }}" class="btn btn-outline-primary">Ajouter un élève</a>
