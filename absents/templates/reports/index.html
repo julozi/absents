@@ -1,0 +1,38 @@
+{% extends "layout.html" %}
+
+{%  block body %}
+
+<h3>Absences du jour</h3>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>Classe</th>
+      <th>Elève</th>
+      <th>Durée</th>
+      <th>Motif</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><a href="{{ url_for('absences.list', class_id=4) }}">Salle 109 - CE1</a></td>
+      <td>Claire Delune</td>
+      <td>Journée</td>
+      <td>Maladie</td>
+    </tr>
+    <tr>
+      <td><a href="{{ url_for('absences.list', class_id=4) }}">Salle 204 - CM2</a></td>
+      <td>Eli Coptère</td>
+      <td>Matin</td>
+      <td>Rdv ORL</td>
+    </tr>
+    <tr>
+      <td><a href="{{ url_for('absences.list', class_id=4) }}">Salle 205 - CM2</a></td>
+      <td>Jean Bon</td>
+      <td>Matin</td>
+      <td></td>
+    </tr>
+  </tbody>
+</table>
+
+{%  endblock %}
