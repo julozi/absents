@@ -32,12 +32,33 @@ def create_grades():
 @app.cli.command()
 def create_2018():
     db.session.add(SchoolYear(id=2018, start_date=date(2018, 9, 3), end_date=date(2019, 7, 5)))
+    # Vacances scolaires
     db.session.add(Vacation(start_date=date(2018, 10, 20), end_date=date(2018, 11, 4)))
     db.session.add(Vacation(start_date=date(2018, 12, 22), end_date=date(2019, 1, 6)))
     db.session.add(Vacation(start_date=date(2019, 2, 9), end_date=date(2019, 2, 24)))
     db.session.add(Vacation(start_date=date(2019, 4, 6), end_date=date(2019, 4, 22)))
     db.session.add(Vacation(start_date=date(2019, 5, 29), end_date=date(2019, 6, 2)))
     db.session.add(Vacation(start_date=date(2019, 7, 6), end_date=date(2019, 9, 1)))
+    # Toussaint
+    db.session.add(Vacation(start_date=date(2018, 11, 1), end_date=date(2018, 11, 1)))
+    # Armistice
+    db.session.add(Vacation(start_date=date(2018, 11, 11), end_date=date(2018, 11, 11)))
+    # Noel
+    db.session.add(Vacation(start_date=date(2018, 12, 25), end_date=date(2018, 12, 25)))
+    # Jour de l'an
+    db.session.add(Vacation(start_date=date(2019, 1, 1), end_date=date(2019, 1, 1)))
+    # Epiphanie
+    db.session.add(Vacation(start_date=date(2019, 1, 6), end_date=date(2019, 1, 6)))
+    # Lundi de Paques
+    db.session.add(Vacation(start_date=date(2019, 4, 22), end_date=date(2019, 4, 22)))
+    # Fête du travail
+    db.session.add(Vacation(start_date=date(2019, 5, 1), end_date=date(2019, 5, 1)))
+    # Victoire 1945
+    db.session.add(Vacation(start_date=date(2019, 5, 8), end_date=date(2019, 5, 8)))
+    # Ascension
+    db.session.add(Vacation(start_date=date(2019, 5, 30), end_date=date(2019, 5, 30)))
+    # Lundi de Pentecôte
+    db.session.add(Vacation(start_date=date(2019, 6, 10), end_date=date(2019, 6, 10)))
     db.session.commit()
 
 
