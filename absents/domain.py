@@ -1,4 +1,5 @@
 from absents import db
+from sqlalchemy import and_, or_
 
 
 schoolclass_grade = db.Table('schoolclass_grade',
@@ -135,3 +136,13 @@ class Vacation(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     start_date = db.Column(db.Date, nullable=False)
     end_date = db.Column(db.Date, nullable=False)
+
+    @classmethod
+    def get_between_dates(cls, start_date, end_date):
+        return Vacation.query.filter(or_(and_(Vacation.end_date >= start_date,
+                                              Vacation.end_date <= end_date),
+                                         and_(Vacation.start_date >= start_date,
+                                              Vacation.start_date <= end_date),
+                                         and_(Vacation.start_date < start_date,
+                                              Vacation.end_date > end_date))
+                                     ).all()

@@ -28,9 +28,13 @@
   </thead>
   <tbody>
     {% for schoolclass in classes|sort(attribute='name') %}
-    <tr onclick="document.location = '{{ url_for('absences.list', class_id=schoolclass.id) }}';">
-      <th scope="row">{{ schoolclass.name }}</th>
-      <td>{{ schoolclass.grade }}{% if schoolclass.bilingual %} (bilingue){% endif %}</td>
+    <tr onclick="document.location = '{{ schoolclass.url }}';">
+      <td scope="row">{{ schoolclass.name }}</td>
+      <td>{{ schoolclass.grade|safe }}</td>
+    </tr>
+    {% else %}
+    <tr>
+      <td colspan="2" class="text-center">Aucune classe enregistrée</td>
     </tr>
     {% endfor %}
   </tbody>
