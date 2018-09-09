@@ -28,8 +28,8 @@
   </thead>
   <tbody>
     {% for schoolclass in classes|sort(attribute='name') %}
-    <tr onclick="document.location = '{{ schoolclass.url }}';">
-      <td scope="row">{{ schoolclass.name }}</td>
+    <tr>
+      <td scope="row"><a href="{{ schoolclass.url }}">{{ schoolclass.name }}</a></td>
       <td>{{ schoolclass.grade|safe }}</td>
     </tr>
     {% else %}
