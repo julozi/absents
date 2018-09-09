@@ -1,0 +1,121 @@
+{% extends "layout.html" %}
+
+{%  block body %}
+
+<h3>Absences non-jutifiées</h3>
+
+<div class="row">
+  <div class="col-sm-2">
+    <a href="{{ url_for('reports.absences', week=previous_week, year=prevous_year) }}" class="btn btn-light">< Semaine précédente</a>
+  </div>
+  <div class="col-sm-8 text-center">
+    <h4>
+      Semaine {{week}}/{{year}}<br/>
+      <small>Du {{ first_day.strftime('%d/%m/%Y') }} au {{ last_day.strftime('%d/%m/%Y') }}</small>
+    </h4>
+  </div>
+  <div class="col-sm-2 text-right">
+    <a href="{{ url_for('reports.absences', week=next_week, year=next_year) }}" class="btn btn-light">Semaine suivante ></a>
+  </div>
+</div>
+
+{% set periods = {'morning': 'matin', 'afternoon': 'après-midi', 'all_day': 'toute la journée'} %}
+
+<table class="table table-sm">
+  <thead>
+    <tr>
+      <th>Elève</th>
+      <th>Classe</th>
+      <th>Absences non-justifiées</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for student in students.keys() %}
+    {% for absence in students[student] %}
+    <tr>
+      {% if loop.first %}
+      <td rowspan="{{ students[student]|length }}">{{ student.firstname }} {{ student.lastname }}</td>
+      <td rowspan="{{ students[student]|length }}"><a href="{{ url_for('absences.list', class_id=student.schoolclass_id, month=month, year=year) }}">{{student.schoolclass.name}}</a></td>
+      {% endif %}
+      <td>{{ absence.date.strftime('%a %d %b %Y') }} - {{ periods[absence.period] }}</td>
+      <td>
+        <button id="btn{{absence.id}}" data-day="{{ absence.date.day }}" data-month="{{ absence.date.month }}" data-year="{{ absence.date.year }}" data-student-id="{{ student.id }}" data-value="{{ absence.period if absence != None }}" data-student="{{ student.firstname }}" class="btn btn-absence btn-outline-primary btn-sm">
+        Modifier
+        </button>
+      </td>
+    </tr>
+    {% endfor %}
+    {% else %}
+    <tr>
+      <td colspan="4" class="text-center">Aucune absence non-justifiée</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{%  endblock %}
+
+{% block endbody %}
+<script type="text/javascript">
+const Form = ({student, day, month, year}) => `
+<form id="absenceform" action="/classes/all/absences" method="post">
+  <input type="hidden" name="student" value="${student}" />
+  <input type="hidden" name="day" value="${day}" />
+  <input type="hidden" name="month" value="${month}" />
+  <input type="hidden" name="year" value="${year}" />
+  <input type="hidden" name="next" value="{{ request.url }}" />
+  <div class="form-check">
+    <input class="form-check-input" type="radio" name="period" id="period-none" value="">
+    <label class="form-check-label" for="period-none">
+      Aucune
+    </label>
+  </div>
+  <div class="form-check">
+    <input class="form-check-input" type="radio" name="period" id="period-morning" value="morning">
+    <label class="form-check-label" for="period-morning">
+      Matin
+    </label>
+  </div>
+  <div class="form-check">
+    <input class="form-check-input" type="radio" name="period" id="period-afternoon" value="afternoon">
+    <label class="form-check-label" for="period-afternoon">
+      Après-midi
+    </label>
+  </div>
+  <div class="form-check">
+    <input class="form-check-input" type="radio" name="period" id="period-all_day" value="all_day">
+    <label class="form-check-label" for="period-all_day">
+      Journée
+    </label>
+  </div>
+  <div class="form-group">
+    <label for="reason">Motif de l'absence</label>
+    <textarea class="form-control" id="reason" name="reason" rows="2"></textarea>
+  </div>
+  <a class="cancel btn btn-outline-secondary">Annuler</a>
+  <button type="submit" class="btn btn-outline-primary">Enregistrer</button>
+</form>
+`;
+
+$('button.btn-absence').click(function () {
+  $('button.btn-absence').popover('dispose');
+  var value = $(this).attr('data-value');
+  var po_settings = {
+    html: true,
+    content: Form({
+      student: $(this).attr('data-student-id'),
+      day: $(this).attr('data-day'),
+      month: $(this).attr('data-month'),
+      year: $(this).attr('data-year'),
+    }),
+    title: "Absence de " + $(this).attr('data-student'),
+  };
+  $(this).popover(po_settings);
+  $(this).popover('show');
+  $(`#absenceform input[value="${value}"]`).prop("checked", true);
+  $('#absenceform a.cancel').click({that: $(this)}, function (event) {
+    event.data.that.popover('dispose');
+  });
+});
+</script>
+{% endblock %}
