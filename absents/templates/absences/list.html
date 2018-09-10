@@ -38,14 +38,15 @@
   <thead>
     <tr>
       <th>Elèves</th>
+      {% if show_class %}<th>Classe</th>{% endif %}
       {% for day in range(1, last_day.day+1) %}
-      <th class="{{'vacation' if day in vacation_days}} {{'weekend' if day in weekend_days}} text-center">{{day}}</th>
+      <th class="{{'vacation' if day in vacation_days}} {{'weekend' if day in weekend_days}} {{'today' if the_day == day}} text-center">{{day}}</th>
       {% endfor %}
     </tr>
   </thead>
   <tbody>
   {% for group in students|groupby('grade.name') %}
-  <tr class="table-secondary"><th colspan="{{ last_day.day + 1 }}">{{ group.grouper }}</th></tr>
+  <tr class="table-secondary"><th colspan="{{ last_day.day + 1 + (1 if show_class else 0) }}">{{ group.grouper }}</th></tr>
   {% for student in group.list %}
   <tr>
     <th>
@@ -54,9 +55,10 @@
       <span class="badge badge-secondary">ULIS</span>
       {% endif %}
     </th>
+    {% if show_class %}<td>{{student.schoolclass.name}}</td>{% endif %}
     {% for day in range(1, last_day.day+1) %}
     {% set absence = absences[student][day] %}
-    <td class="{{'vacation' if day in vacation_days}} {{'weekend' if day in weekend_days}} text-center">
+    <td class="{{'vacation' if day in vacation_days}} {{'weekend' if day in weekend_days}} {{'today' if the_day == day}} text-center">
       {% if day not in vacation_days and day not in weekend_days %}
         <button id="btn{{student.id}}_{{day}}" data-day="{{ day }}" data-student-id="{{ student.id }}" data-value="{{ absence.period if absence != None }}" data-student="{{ student.firstname }}" data-reason="{{ absence.reason|default('', true) }}" class="btn btn-absence {% if absence != None %}{% if absence.reason == None%}btn-warning{% else %}btn-info{% endif %}{% else %}btn-light{% endif %}">
         {% if absence != None %}
@@ -72,7 +74,7 @@
   {% endfor %}
   {% else %}
   <tr>
-    <td class="text-center" colspan="{{ last_day.day + 1 }}">
+    <td class="text-center" colspan="{{ last_day.day + 1 + (1 if show_class else 0) }}">
       Aucun élève dans cette classe à cette période
     </td>
   </tr>

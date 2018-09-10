@@ -26,9 +26,14 @@ def adjust_month_and_year(month, schoolyear=None):
     return (month, year)
 
 
-def render_absences_table(title, month, year, school_year, students, absences, manage_url=None):
+def render_absences_table(title, month, year, school_year, students, absences, show_class=False, manage_url=None):
     first_day = date(year, month, 1)
     last_day = date(year, month, monthrange(year, month)[1])
+
+    today = date.today()
+    the_day = None
+    if today >= first_day and today <= last_day:
+        the_day = today.day
 
     # generate vacation list and weekend list
     vacations = Vacation.get_between_dates(first_day, last_day)
@@ -80,8 +85,10 @@ def render_absences_table(title, month, year, school_year, students, absences, m
     return render_template('absences/list.html',
                            title=title,
                            manage_url=manage_url,
+                           show_class=show_class,
                            month=month,
                            year=year,
+                           the_day=the_day,
                            previous_month=previous_month,
                            previous_url=previous_url,
                            next_month=next_month,
@@ -135,7 +142,8 @@ def all():
                                  year=year,
                                  school_year=school_year,
                                  students=students,
-                                 absences=absences)
+                                 absences=absences,
+                                 show_class=True)
 
 
 @bp_absences.route('/ulis/absences', methods=['GET'])

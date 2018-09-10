@@ -11,3 +11,10 @@ table .vacation {
   color: rgb(120, 120, 120);
   background-color: rgb(170, 170, 170);
 }
+
+th.today,td.today {
+  border-left-color: gold;
+  border-right-color: gold;
+  border-left-width: 5px;
+  border-right-width: 5px;
+}
