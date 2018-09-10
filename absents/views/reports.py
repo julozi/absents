@@ -15,7 +15,7 @@ def absences():
         week = int(request.args['week'])
         year = int(request.args['year'])
 
-    first_day = datetime.strptime('%s-%s-1' % (year, week), "%G-%V-%w")
+    first_day = datetime.strptime('%s-%s-1' % (year, week), "%Y-%W-%w")
     last_day = first_day + timedelta(days=6)
 
     month = first_day.month
