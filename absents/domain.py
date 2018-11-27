@@ -107,9 +107,9 @@ class Absence(db.Model):
     }
 
     SCORE = {
-        'morning': 0.5,
-        'afternoon': 0.5,
-        'all_day': 1.0
+        'morning': 1.0,
+        'afternoon': 1.0,
+        'all_day': 2.0
     }
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
