@@ -63,6 +63,39 @@ def create_2018():
 
 
 @app.cli.command()
+def create_2019():
+    db.session.add(SchoolYear(id=2019, start_date=date(2019, 9, 2), end_date=date(2020, 7, 4)))
+    # Vacances scolaires
+    db.session.add(Vacation(start_date=date(2019, 10, 19), end_date=date(2019, 11, 3)))  # Toussaint
+    db.session.add(Vacation(start_date=date(2019, 12, 21), end_date=date(2020, 1, 5)))  # Noël
+    db.session.add(Vacation(start_date=date(2020, 2, 15), end_date=date(2020, 3, 1)))  # Hiver
+    db.session.add(Vacation(start_date=date(2020, 4, 11), end_date=date(2020, 4, 26)))  # Printemps
+    db.session.add(Vacation(start_date=date(2020, 5, 22), end_date=date(2020, 5, 23)))  # Pont
+    db.session.add(Vacation(start_date=date(2020, 7, 4), end_date=date(2020, 8, 31)))  # Ete
+    # Toussaint
+    db.session.add(Vacation(start_date=date(2019, 11, 1), end_date=date(2019, 11, 1)))
+    # Armistice
+    db.session.add(Vacation(start_date=date(2019, 11, 11), end_date=date(2019, 11, 11)))
+    # Noel
+    db.session.add(Vacation(start_date=date(2019, 12, 25), end_date=date(2019, 12, 25)))
+    # Jour de l'an
+    db.session.add(Vacation(start_date=date(2020, 1, 1), end_date=date(2020, 1, 1)))
+    # Epiphanie
+    db.session.add(Vacation(start_date=date(2020, 1, 6), end_date=date(2020, 1, 6)))
+    # Lundi de Paques
+    db.session.add(Vacation(start_date=date(2020, 4, 13), end_date=date(2020, 4, 13)))
+    # Fête du travail
+    db.session.add(Vacation(start_date=date(2020, 5, 1), end_date=date(2020, 5, 1)))
+    # Victoire 1945
+    db.session.add(Vacation(start_date=date(2020, 5, 8), end_date=date(2020, 5, 8)))
+    # Ascension
+    db.session.add(Vacation(start_date=date(2020, 5, 21), end_date=date(2020, 5, 21)))
+    # Lundi de Pentecôte
+    db.session.add(Vacation(start_date=date(2020, 5, 31), end_date=date(2020, 5, 31)))
+    db.session.commit()
+
+
+@app.cli.command()
 @click.option('--year', type=click.INT)
 @click.argument('f', type=click.Path(exists=True))
 def import_csv(year, f):
@@ -77,7 +110,7 @@ def import_csv(year, f):
             except ValueError:
                 print("Ignoring line : %s" % student_data)
                 continue
-            school_class = SchoolClass.query.filter_by(room=room).first()
+            school_class = SchoolClass.query.filter_by(room=room).filter_by(school_year=school_year).first()
             if not school_class:
                 bilingual = student_data[2] == 'X'
                 school_class = SchoolClass(schoolyear=school_year, room=room, bilingual=bilingual)
