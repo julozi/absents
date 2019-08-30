@@ -76,6 +76,7 @@ class Student(db.Model):
     start_date = db.Column(db.Date, nullable=False)
     end_date = db.Column(db.Date, nullable=False)
     ulis = db.Column(db.Boolean, nullable=False, default=False)
+    choral = db.Column(db.Boolean, nullable=False, default=False)
 
     schoolclass = db.relationship(SchoolClass, backref="students")
     grade = db.relationship(Grade)

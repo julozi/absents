@@ -110,7 +110,7 @@ def import_csv(year, f):
             except ValueError:
                 print("Ignoring line : %s" % student_data)
                 continue
-            school_class = SchoolClass.query.filter_by(room=room).filter_by(school_year=school_year).first()
+            school_class = SchoolClass.query.filter_by(room=room).filter_by(schoolyear=school_year).first()
             if not school_class:
                 bilingual = student_data[2] == 'X'
                 school_class = SchoolClass(schoolyear=school_year, room=room, bilingual=bilingual)
@@ -124,14 +124,16 @@ def import_csv(year, f):
             if grade not in school_class.grades:
                 school_class.grades.append(grade)
 
-            ulis = student_data[3] == 'X'
-            student = Student(firstname=student_data[5],
-                              lastname=student_data[4],
-                              birth_date=datetime.strptime(student_data[6], '%d/%m/%Y').date(),
-                              gender=student_data[7].lower(),
+            choral = student_data[3] == 'X'
+            ulis = student_data[4] == 'X'
+            student = Student(firstname=student_data[6],
+                              lastname=student_data[5],
+                              birth_date=datetime.strptime(student_data[7], '%d/%m/%Y').date(),
+                              gender=student_data[8].lower(),
                               start_date=school_year.start_date,
                               end_date=school_year.end_date,
                               ulis=ulis,
+                              choral=choral,
                               schoolclass=school_class,
                               grade=grade)
             db.session.add(student)
