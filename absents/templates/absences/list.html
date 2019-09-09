@@ -1,5 +1,31 @@
 {% extends "layout.html" %}
 
+{% macro student_line(student, show_class, last_day, absences) %}
+<tr>
+  <th>
+    {{ student.lastname }} {{ student.firstname }}
+    {% if student.ulis %}
+    <span class="badge badge-secondary">ULIS</span>
+    {% endif %}
+  </th>
+  {% if show_class %}<td>{{student.schoolclass.name}}</td>{% endif %}
+  {% for day in range(1, last_day.day+1) %}
+  {% set absence = absences[student][day] %}
+  <td class="{{'vacation' if day in vacation_days}} {{'weekend' if day in weekend_days}} {{'today' if the_day == day}} text-center">
+    {% if day not in vacation_days and day not in weekend_days %}
+      <button id="btn{{student.id}}_{{day}}" data-day="{{ day }}" data-student-id="{{ student.id }}" data-value="{{ absence.period if absence != None }}" data-student="{{ student.firstname }}" data-reason="{{ absence.reason|default('', true) }}" class="btn btn-absence {% if absence != None %}{% if absence.reason == None%}btn-warning{% else %}btn-info{% endif %}{% else %}btn-light{% endif %}">
+      {% if absence != None %}
+        {{ absence.symbol|safe }}
+      {% else %}
+        &nbsp;
+      {% endif %}
+      </button>
+    {% endif %}
+  </td>
+  {% endfor %}
+</tr>
+{% endmacro %}
+
 {% block body %}
 <div class="row">
   <div class="col-sm-6">
@@ -45,32 +71,11 @@
     </tr>
   </thead>
   <tbody>
+  {% if group_by_class %}
   {% for group in students|groupby('grade.name') %}
   <tr class="table-secondary"><th colspan="{{ last_day.day + 1 + (1 if show_class else 0) }}">{{ group.grouper }}</th></tr>
   {% for student in group.list %}
-  <tr>
-    <th>
-      {{ student.lastname }} {{ student.firstname }}
-      {% if student.ulis %}
-      <span class="badge badge-secondary">ULIS</span>
-      {% endif %}
-    </th>
-    {% if show_class %}<td>{{student.schoolclass.name}}</td>{% endif %}
-    {% for day in range(1, last_day.day+1) %}
-    {% set absence = absences[student][day] %}
-    <td class="{{'vacation' if day in vacation_days}} {{'weekend' if day in weekend_days}} {{'today' if the_day == day}} text-center">
-      {% if day not in vacation_days and day not in weekend_days %}
-        <button id="btn{{student.id}}_{{day}}" data-day="{{ day }}" data-student-id="{{ student.id }}" data-value="{{ absence.period if absence != None }}" data-student="{{ student.firstname }}" data-reason="{{ absence.reason|default('', true) }}" class="btn btn-absence {% if absence != None %}{% if absence.reason == None%}btn-warning{% else %}btn-info{% endif %}{% else %}btn-light{% endif %}">
-        {% if absence != None %}
-          {{ absence.symbol|safe }}
-        {% else %}
-          &nbsp;
-        {% endif %}
-        </button>
-      {% endif %}
-    </td>
-    {% endfor %}
-  </tr>
+  {{ student_line(student, show_class, last_day, absences) }}
   {% endfor %}
   {% else %}
   <tr>
@@ -79,6 +84,17 @@
     </td>
   </tr>
   {% endfor %}
+  {% else %}
+  {% for student in students %}
+  {{ student_line(student, show_class, last_day, absences) }}
+  {% else %}
+  <tr>
+    <td class="text-center" colspan="{{ last_day.day + 1 + (1 if show_class else 0) }}">
+      Aucun élève dans cette classe à cette période
+    </td>
+  </tr>
+  {% endfor %}
+  {% endif %}
   </tbody>
 </table>
 

@@ -26,7 +26,7 @@ def adjust_month_and_year(month, schoolyear=None):
     return (month, year)
 
 
-def render_absences_table(title, month, year, school_year, students, absences, show_class=False, manage_url=None):
+def render_absences_table(title, month, year, school_year, students, absences, show_class=False, group_by_class=True, manage_url=None):
     first_day = date(year, month, 1)
     last_day = date(year, month, monthrange(year, month)[1])
 
@@ -86,6 +86,7 @@ def render_absences_table(title, month, year, school_year, students, absences, s
                            title=title,
                            manage_url=manage_url,
                            show_class=show_class,
+                           group_by_class=group_by_class,
                            month=month,
                            year=year,
                            the_day=the_day,
@@ -127,7 +128,7 @@ def all():
                                   and_(Student.start_date < first_day,
                                        Student.end_date > last_day)))\
                       .join(Grade, Student.grade)\
-                      .order_by(Grade.cycle, Grade.level, Student.lastname, Student.firstname)\
+                      .order_by(Student.lastname, Student.firstname)\
                       .all()
 
     # retrieve absences
@@ -143,7 +144,8 @@ def all():
                                  school_year=school_year,
                                  students=students,
                                  absences=absences,
-                                 show_class=True)
+                                 show_class=True,
+                                 group_by_class=False)
 
 
 @bp_absences.route('/ulis/absences', methods=['GET'])
@@ -212,7 +214,7 @@ def list(class_id):
                                        Student.start_date <= last_day),
                                   and_(Student.start_date < first_day,
                                        Student.end_date > last_day)))\
-                      .order_by(Grade.cycle, Grade.level, Student.lastname, Student.firstname)\
+                      .order_by(Student.lastname, Student.firstname)\
                       .all()  # noqa
 
     # retrieve absences
