@@ -129,6 +129,39 @@ def create_2020():
 
 
 @app.cli.command()
+def create_2021():
+    db.session.add(SchoolYear(id=2021, start_date=date(2021, 9, 2), end_date=date(2022, 7, 7)))
+    # Vacances scolaires
+    db.session.add(Vacation(start_date=date(2021, 10, 23), end_date=date(2021, 11, 7)))  # Toussaint
+    db.session.add(Vacation(start_date=date(2021, 12, 18), end_date=date(2022, 1, 2)))  # Noël
+    db.session.add(Vacation(start_date=date(2022, 2, 5), end_date=date(2022, 2, 20)))  # Hiver
+    db.session.add(Vacation(start_date=date(2022, 4, 9), end_date=date(2022, 4, 24)))  # Printemps
+    db.session.add(Vacation(start_date=date(2022, 5, 26), end_date=date(2022, 5, 28)))  # Pont
+    db.session.add(Vacation(start_date=date(2022, 7, 8), end_date=date(2022, 8, 31)))  # Ete
+    # Toussaint
+    db.session.add(Vacation(start_date=date(2021, 11, 1), end_date=date(2021, 11, 1)))
+    # Armistice
+    db.session.add(Vacation(start_date=date(2021, 11, 11), end_date=date(2021, 11, 11)))
+    # Noel
+    db.session.add(Vacation(start_date=date(2021, 12, 25), end_date=date(2021, 12, 25)))
+    # Jour de l'an
+    db.session.add(Vacation(start_date=date(2022, 1, 1), end_date=date(2022, 1, 1)))
+    # Vendredi saint
+    db.session.add(Vacation(start_date=date(2022, 4, 15), end_date=date(2022, 4, 15)))
+    # Lundi de Paques
+    db.session.add(Vacation(start_date=date(2022, 4, 18), end_date=date(2022, 4, 18)))
+    # Fête du travail
+    db.session.add(Vacation(start_date=date(2022, 5, 1), end_date=date(2022, 5, 1)))
+    # Victoire 1945
+    db.session.add(Vacation(start_date=date(2022, 5, 8), end_date=date(2022, 5, 8)))
+    # Ascension
+    db.session.add(Vacation(start_date=date(2022, 5, 26), end_date=date(2022, 5, 26)))
+    # Lundi de Pentecôte
+    db.session.add(Vacation(start_date=date(2022, 6, 6), end_date=date(2022, 6, 6)))
+    db.session.commit()
+
+
+@app.cli.command()
 @click.option('--year', type=click.INT)
 @click.argument('f', type=click.Path(exists=True))
 def import_csv(year, f):
