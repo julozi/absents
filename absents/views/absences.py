@@ -56,6 +56,7 @@ def render_absences_table(title, month, year, school_year, students, absences, s
         for day in range(1, last_day.day + 1):
             absences_data[student][day] = None
     for absence in absences:
+        print(absence)
         absences_data[absence.student][absence.date.day] = absence
 
     nb_students = len(students)
@@ -242,16 +243,17 @@ def create_or_update():
                            .first()
 
     period = request.form['period']
+    reason = request.form['reason']
 
-    if period == "":
+    if period == "" and reason == "" :
         if absence is not None:
             db.session.delete(absence)
     else:
         if absence is None:
             absence = Absence(student_id=int(request.form['student']), date=d)
             db.session.add(absence)
-        absence.period = period
-        absence.reason = request.form['reason'] if len(request.form['reason']) > 0 else None
+        absence.period = period if len(period) > 0 else None
+        absence.reason = reason if len(reason) > 0 else None
 
     db.session.commit()
     return redirect(request.form['next'])

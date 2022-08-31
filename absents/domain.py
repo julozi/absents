@@ -115,7 +115,7 @@ class Absence(db.Model):
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     date = db.Column(db.Date, nullable=False)
-    period = db.Column(db.Enum('morning', 'afternoon', 'all_day', name='absence_period'), nullable=False)
+    period = db.Column(db.Enum('morning', 'afternoon', 'all_day', name='absence_period'), nullable=True)
     reason = db.Column(db.Text, nullable=True)
 
     student_id = db.Column(db.Integer, db.ForeignKey('student.id', ondelete='CASCADE'))
@@ -124,11 +124,11 @@ class Absence(db.Model):
 
     @property
     def symbol(self):
-        return self.SYMBOL[self.period]
+        return self.SYMBOL[self.period] if self.period else 'i'
 
     @property
     def score(self):
-        return self.SCORE[self.period]
+        return self.SCORE[self.period] if self.period else 0
 
 
 class Vacation(db.Model):
