@@ -9,6 +9,6 @@ setup(
         'flask==1.0.2',
         'flask-sqlalchemy==2.3.2',
         'good==0.0.7.post0',
-        'Werkzeug==0.16.0'
+        'Werkzeug==2.2.3'
     ],
 )
