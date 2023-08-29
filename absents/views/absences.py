@@ -242,7 +242,7 @@ def create_or_update():
                            .filter_by(date=d)\
                            .first()
 
-    period = request.form['period']
+    period = request.form['period'] if 'period' in request.form else ''
     reason = request.form['reason']
 
     if period == "" and reason == "" :

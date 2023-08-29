@@ -194,6 +194,38 @@ def create_2022():
 
 
 @app.cli.command()
+def create_2023():
+    db.session.add(SchoolYear(id=2023, start_date=date(2023, 9, 4), end_date=date(2024, 7, 5)))
+    # Vacances scolaires
+    db.session.add(Vacation(start_date=date(2023, 10, 21), end_date=date(2023, 11, 5)))  # Toussaint
+    db.session.add(Vacation(start_date=date(2023, 12, 23), end_date=date(2024, 1, 7)))  # Noël
+    db.session.add(Vacation(start_date=date(2024, 2, 24), end_date=date(2024, 3, 10)))  # Hiver
+    db.session.add(Vacation(start_date=date(2024, 4, 20), end_date=date(2024, 5, 5)))  # Printemps
+    db.session.add(Vacation(start_date=date(2024, 7, 6), end_date=date(2024, 9, 1)))  # Ete
+    # Toussaint
+    db.session.add(Vacation(start_date=date(2023, 11, 1), end_date=date(2023, 11, 1)))
+    # Armistice
+    db.session.add(Vacation(start_date=date(2023, 11, 11), end_date=date(2023, 11, 11)))
+    # Noel
+    db.session.add(Vacation(start_date=date(2023, 12, 25), end_date=date(2023, 12, 25)))
+    # Jour de l'an
+    db.session.add(Vacation(start_date=date(2024, 1, 1), end_date=date(2024, 1, 1)))
+    # Vendredi saint
+    db.session.add(Vacation(start_date=date(2024, 3, 29), end_date=date(2024, 3, 29)))
+    # Lundi de Paques
+    db.session.add(Vacation(start_date=date(2024, 4, 1), end_date=date(2024, 4, 1)))
+    # Fête du travail
+    db.session.add(Vacation(start_date=date(2024, 5, 1), end_date=date(2024, 5, 1)))
+    # Victoire 1945
+    db.session.add(Vacation(start_date=date(2024, 5, 8), end_date=date(2024, 5, 8)))
+    # Ascension
+    db.session.add(Vacation(start_date=date(2024, 5, 9), end_date=date(2024, 5, 9)))
+    # Lundi de Pentecôte
+    db.session.add(Vacation(start_date=date(2024, 5, 20), end_date=date(2024, 5, 20)))
+    db.session.commit()
+
+
+@app.cli.command()
 @click.option('--year', type=click.INT)
 @click.argument('f', type=click.Path(exists=True))
 def import_csv(year, f):
@@ -210,7 +242,7 @@ def import_csv(year, f):
                 continue
             school_class = SchoolClass.query.filter_by(room=room).filter_by(schoolyear=school_year).first()
             if not school_class:
-                bilingual = student_data[2] == 'X'
+                bilingual = student_data[2] in ('X', 'x')
                 school_class = SchoolClass(schoolyear=school_year, room=room, bilingual=bilingual)
                 db.session.add(school_class)
 
@@ -222,8 +254,8 @@ def import_csv(year, f):
             if grade not in school_class.grades:
                 school_class.grades.append(grade)
 
-            choral = student_data[3] == 'X'
-            ulis = student_data[4] == 'X'
+            choral = student_data[3] in ('X', 'x')
+            ulis = student_data[4] in ('X', 'x')
             student = Student(firstname=student_data[6],
                               lastname=student_data[5],
                               birth_date=datetime.strptime(student_data[7], '%d/%m/%Y').date(),
