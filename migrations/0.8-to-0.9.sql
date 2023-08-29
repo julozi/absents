@@ -1,0 +1,1 @@
+ALTER TABLE absences MODIFY COLUMN period VARCHAR;
