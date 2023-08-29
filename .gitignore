@@ -5,6 +5,9 @@
 *.DS_Store
 *.sublime-workspace
 .idea
+*.csv
+*.xlsx
+old
 
 # Python files
 __pycache__
@@ -18,10 +21,10 @@ dist
 *.pot
 
 # Virtual env
-env
+*env
 
 # All sqlite database file
-*.s3db
+*.s3db*
 *.db3
 *.sqlite
 
@@ -32,3 +35,4 @@ cover_html/
 
 # Platform specific files
 app.json
+.vscode
