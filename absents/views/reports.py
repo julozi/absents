@@ -9,14 +9,18 @@ bp_reports = Blueprint('reports', __name__)
 def absences():
     if 'week' not in request.args or 'year' not in request.args:
         today = date.today()
+        print(today)
         week = today.isocalendar()[1]
+        print(week)
         year = today.year
     else:
         week = int(request.args['week'])
         year = int(request.args['year'])
 
-    first_day = datetime.strptime('%s-%s-1' % (year, week), "%Y-%W-%w")
+    first_day = datetime.strptime('%s-%s-1' % (year,  week - 1 if year == 2025 else week), "%Y-%W-%w")
     last_day = first_day + timedelta(days=6)
+
+    print(first_day)
 
     month = first_day.month
 
