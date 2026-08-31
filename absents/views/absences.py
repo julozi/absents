@@ -55,7 +55,6 @@ def render_absences_table(title, month, year, school_year, students, absences, s
         for day in range(1, last_day.day + 1):
             absences_data[student][day] = None
     for absence in absences:
-        print(absence)
         absences_data[absence.student][absence.date.day] = absence
 
     nb_students = len(students)
