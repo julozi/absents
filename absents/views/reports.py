@@ -1,6 +1,7 @@
-from datetime import date, datetime, timedelta
+from datetime import date, timedelta
 from flask import Blueprint, render_template, request
 from absents.domain import Absence
+from absents.utils import date_from_isocalendar
 
 bp_reports = Blueprint('reports', __name__)
 
@@ -8,19 +9,14 @@ bp_reports = Blueprint('reports', __name__)
 @bp_reports.route('/absences')
 def absences():
     if 'week' not in request.args or 'year' not in request.args:
-        today = date.today()
-        print(today)
-        week = today.isocalendar()[1]
-        print(week)
-        year = today.year
+        year, week, _ = date.today().isocalendar()
     else:
         week = int(request.args['week'])
         year = int(request.args['year'])
 
-    first_day = datetime.strptime('%s-%s-1' % (year,  week - 1 if year == 2025 else week), "%Y-%W-%w")
+    # numéro de semaine ISO 8601 : first_day est le lundi, last_day le dimanche
+    first_day = date_from_isocalendar(year, week, 1)
     last_day = first_day + timedelta(days=6)
-
-    print(first_day)
 
     month = first_day.month
 
