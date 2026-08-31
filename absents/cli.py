@@ -290,6 +290,40 @@ def create_2025():
 
 
 @app.cli.command()
+def create_2026():
+    db.session.add(SchoolYear(id=2026, start_date=date(2026, 9, 1), end_date=date(2027, 7, 2)))
+    # Vacances scolaires (zone B)
+    db.session.add(Vacation(start_date=date(2026, 10, 17), end_date=date(2026, 11, 1)))  # Toussaint
+    db.session.add(Vacation(start_date=date(2026, 12, 19), end_date=date(2027, 1, 3)))  # Noël
+    db.session.add(Vacation(start_date=date(2027, 2, 20), end_date=date(2027, 3, 7)))  # Hiver
+    db.session.add(Vacation(start_date=date(2027, 4, 17), end_date=date(2027, 5, 2)))  # Printemps
+    db.session.add(Vacation(start_date=date(2027, 7, 3), end_date=date(2027, 8, 31)))  # Ete
+    # Toussaint
+    db.session.add(Vacation(start_date=date(2026, 11, 1), end_date=date(2026, 11, 1)))
+    # Armistice
+    db.session.add(Vacation(start_date=date(2026, 11, 11), end_date=date(2026, 11, 11)))
+    # Noel
+    db.session.add(Vacation(start_date=date(2026, 12, 25), end_date=date(2026, 12, 25)))
+    # Jour de l'an
+    db.session.add(Vacation(start_date=date(2027, 1, 1), end_date=date(2027, 1, 1)))
+    # Vendredi saint
+    db.session.add(Vacation(start_date=date(2027, 3, 26), end_date=date(2027, 3, 26)))
+    # Lundi de Paques
+    db.session.add(Vacation(start_date=date(2027, 3, 29), end_date=date(2027, 3, 29)))
+    # Fête du travail
+    db.session.add(Vacation(start_date=date(2027, 5, 1), end_date=date(2027, 5, 1)))
+    # Victoire 1945
+    db.session.add(Vacation(start_date=date(2027, 5, 8), end_date=date(2027, 5, 8)))
+    # Ascension
+    db.session.add(Vacation(start_date=date(2027, 5, 6), end_date=date(2027, 5, 6)))
+    # Pont Ascension
+    db.session.add(Vacation(start_date=date(2027, 5, 7), end_date=date(2027, 5, 7)))
+    # Lundi de Pentecôte
+    db.session.add(Vacation(start_date=date(2027, 5, 17), end_date=date(2027, 5, 17)))
+    db.session.commit()
+
+
+@app.cli.command()
 @click.option('--year', type=click.INT)
 @click.argument('f', type=click.Path(exists=True))
 def import_csv(year, f):
