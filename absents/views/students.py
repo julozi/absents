@@ -3,7 +3,7 @@ from flask import abort, Blueprint, flash, redirect, render_template, request, u
 from good import All, Any, Boolean, Coerce, Date, Default, Entire, In, Length, Msg, Optional, Range, Required, Schema
 from good.schema.errors import Invalid, MultipleInvalid
 
-from absents import db
+from absents import app, db
 from absents.domain import SchoolClass, Student
 
 bp_students = Blueprint('students', __name__)
@@ -122,8 +122,9 @@ def add(class_id):
 
     try:
         db.session.commit()
-    except Exception as e:
-        print(e)
+    except Exception:
+        db.session.rollback()
+        app.logger.exception("Échec de l'enregistrement d'un élève")
         flash("Une erreur s'est produite lors de l'enregistrement de l'élève. \
         Merci de contacter l'administrateur de l'application.", 'danger')
         return redirect(url_for('students.list', class_id=class_id))
@@ -173,8 +174,9 @@ def update(class_id, student_id):
 
     try:
         db.session.commit()
-    except Exception as e:
-        print(e)
+    except Exception:
+        db.session.rollback()
+        app.logger.exception("Échec de la modification d'un élève")
         flash("Une erreur s'est produite lors de l'enregistrement de l'élève. \
         Merci de contacter l'administrateur de l'application.", 'danger')
         return redirect(url_for('students.list', class_id=class_id))
@@ -187,7 +189,15 @@ def update(class_id, student_id):
 def delete(class_id, student_id):
     student = Student.query.get(student_id)
     db.session.delete(student)
-    db.session.commit()
+
+    try:
+        db.session.commit()
+    except Exception:
+        db.session.rollback()
+        app.logger.exception("Échec de la suppression d'un élève")
+        flash("Une erreur s'est produite lors de la suppression de l'élève. \
+        Merci de contacter l'administrateur de l'application.", 'danger')
+        return redirect(url_for('students.list', class_id=class_id))
 
     flash("Elève supprimé avec succès", 'success')
     return redirect(url_for('students.list', class_id=class_id))
