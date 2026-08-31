@@ -1,3 +1,5 @@
+from datetime import date
+
 from absents import db
 from sqlalchemy import and_, or_
 
@@ -17,6 +19,25 @@ class SchoolYear(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     start_date = db.Column(db.Date, nullable=False)
     end_date = db.Column(db.Date, nullable=False)
+
+    def clamp(self, day):
+        """Ramène une date dans les bornes de l'année scolaire."""
+        return min(max(day, self.start_date), self.end_date)
+
+    def default_month(self, today=None):
+        """(mois, année civile) à afficher par défaut pour cette année scolaire.
+
+        Pendant l'année scolaire, le mois courant ; en dehors (vacances d'été,
+        année passée ou future), le mois de la borne la plus proche.
+        """
+        day = self.clamp(today or date.today())
+        return (day.month, day.year)
+
+    def calendar_year_for_month(self, month):
+        """Année civile correspondant à un mois donné de cette année scolaire."""
+        if month >= self.start_date.month:
+            return self.start_date.year
+        return self.end_date.year
 
 
 class SchoolClass(db.Model):

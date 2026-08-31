@@ -4,26 +4,25 @@ from flask import Blueprint, redirect, render_template, request, url_for
 from sqlalchemy import and_, or_
 
 from absents import db
-from absents.domain import Absence, Grade, SchoolClass, Student, Vacation
+from absents.domain import Absence, Grade, SchoolClass, SchoolYear, Student, Vacation
+from absents.utils import get_closest_school_year
 
 bp_absences = Blueprint('absences', __name__)
 
 
-def adjust_month_and_year(month, schoolyear=None):
-    if schoolyear is None:
-        today = date.today()
-        if month <= 8:
-            year = today.year - 1
-        else:
-            year = today.year
-    else:
-        if month <= 8:
-            year = schoolyear + 1
-        else:
-            year = schoolyear
-    if month == 8:
-        month = 9 if year <= schoolyear else 7
-    return (month, year)
+def resolve_month_and_year(school_year):
+    """Détermine le (mois, année civile) à afficher pour une année scolaire.
+
+    `school_year` est une instance de SchoolYear. Sans paramètre `month` dans la
+    requête, on prend le mois par défaut de l'année scolaire (mois courant s'il
+    tombe dedans, sinon la borne la plus proche). Avec un `month` explicite, on
+    déduit l'année civile correspondante.
+    """
+    month_arg = request.args.get('month')
+    if month_arg is None:
+        return school_year.default_month()
+    month = int(month_arg)
+    return (month, school_year.calendar_year_for_month(month))
 
 
 def render_absences_table(title, month, year, school_year, students, absences, show_class=False, group_by_class=True, manage_url=None):
@@ -69,14 +68,16 @@ def render_absences_table(title, month, year, school_year, students, absences, s
     view_args = request.view_args
     request_args = request.args.to_dict()
     if 'school_year' in request.args:
-        request_args['school_year'] = school_year
-    previous_month = date(year, month, 1) - timedelta(days=1) if first_day > date(school_year, 9, 1) else None
+        request_args['school_year'] = school_year.id
+    school_year_start = school_year.start_date.replace(day=1)
+    school_year_end = school_year.end_date.replace(day=1)
+    previous_month = date(year, month, 1) - timedelta(days=1) if first_day > school_year_start else None
     previous_url = None
     if previous_month is not None:
         request_args['month'] = previous_month.month
         values = {**view_args, **request_args}
         previous_url = url_for(request.endpoint, **values)
-    next_month = date(year, month, 1) + timedelta(days=last_day.day) if first_day < date(school_year + 1, 7, 1) else None
+    next_month = date(year, month, 1) + timedelta(days=last_day.day) if first_day < school_year_end else None
     next_url = None
     if next_month is not None:
         request_args['month'] = next_month.month
@@ -109,12 +110,10 @@ def render_absences_table(title, month, year, school_year, students, absences, s
 
 @bp_absences.route('/all/absences', methods=['GET'])
 def all():
-    today = date.today()
     title = 'Tous les élèves'
 
-    month = int(request.args.get('month', today.month))
-    school_year = int(request.args.get('school_year', today.year))
-    (month, year) = adjust_month_and_year(month, school_year)
+    school_year = SchoolYear.query.get_or_404(request.args.get('school_year', get_closest_school_year()))
+    (month, year) = resolve_month_and_year(school_year)
 
     # get first and last day of month
     first_day = date(year, month, 1)
@@ -151,12 +150,10 @@ def all():
 
 @bp_absences.route('/ulis/absences', methods=['GET'])
 def ulis():
-    today = date.today()
     title = 'ULIS'
 
-    month = int(request.args.get('month', today.month))
-    school_year = int(request.args.get('school_year', today.year))
-    (month, year) = adjust_month_and_year(month, school_year)
+    school_year = SchoolYear.query.get_or_404(request.args.get('school_year', get_closest_school_year()))
+    (month, year) = resolve_month_and_year(school_year)
 
     # get first and last day of month
     first_day = date(year, month, 1)
@@ -193,13 +190,11 @@ def ulis():
 
 @bp_absences.route('/<class_id>/absences', methods=['GET'])
 def list(class_id):
-    today = date.today()
     schoolclass = SchoolClass.query.get(class_id)
     title = schoolclass.name
 
-    month = int(request.args.get('month', today.month))
-    school_year = schoolclass.year
-    (month, year) = adjust_month_and_year(month, school_year)
+    school_year = schoolclass.schoolyear
+    (month, year) = resolve_month_and_year(school_year)
 
     # get first and last day of month
     first_day = date(year, month, 1)
