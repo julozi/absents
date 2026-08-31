@@ -189,7 +189,15 @@ def update(class_id, student_id):
 def delete(class_id, student_id):
     student = Student.query.get(student_id)
     db.session.delete(student)
-    db.session.commit()
+
+    try:
+        db.session.commit()
+    except Exception:
+        db.session.rollback()
+        app.logger.exception("Échec de la suppression d'un élève")
+        flash("Une erreur s'est produite lors de la suppression de l'élève. \
+        Merci de contacter l'administrateur de l'application.", 'danger')
+        return redirect(url_for('students.list', class_id=class_id))
 
     flash("Elève supprimé avec succès", 'success')
     return redirect(url_for('students.list', class_id=class_id))
